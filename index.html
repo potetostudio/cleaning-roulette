@@ -162,7 +162,7 @@
             <div class="legend-item"><div class="legend-dot" style="background:var(--p1)"></div>1コマ目：×0.3</div>
             <div class="legend-item"><div class="legend-dot" style="background:var(--p2)"></div>2コマ目：×0.55</div>
             <div class="legend-item"><div class="legend-dot" style="background:var(--p34)"></div>午後：×1.0</div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--done)"></div>今週済み：×0.1（重複可）</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--done)"></div>今週済み：×0.1（独立）</div>
         </div>
 
         <div class="grid-2x2">
@@ -184,7 +184,7 @@
             </div>
             <div class="period-block pdone" style="grid-column: 1 / -1;">
                 <div class="period-header">🧹 今週すでに掃除をした人<span class="period-meta">×0.1（出席倍率と掛け合わせ）</span></div>
-                <div class="period-body" style="min-height:50px;"><textarea id="namesDone" placeholder="1人1行　※上の欄に名前を入れた上で、ここにも入力してください"></textarea></div>
+                <div class="period-body" style="min-height:50px;"><textarea id="namesDone" placeholder="1人1行　上の欄への入力は不要です"></textarea></div>
             </div>
         </div>
 
@@ -289,12 +289,13 @@
     }
 
     function getItems() {
-        // 出席欄の全員をルーレット対象に（今週済みの人も出席欄に入れてもらう前提）
+        // 出席欄＋今週済み欄の全員を対象に（重複除去）
         const all = [
             ...parseNames(names0Input),
             ...parseNames(names1Input),
             ...parseNames(names2Input),
-            ...parseNames(names34Input)
+            ...parseNames(names34Input),
+            ...parseNames(namesDoneInput),
         ];
         const seen = new Set();
         const unique = [];
@@ -304,8 +305,9 @@
         return unique
             .filter(name => !sessionWinners.includes(name))
             .map(name => {
+                // 今週済みは独立して×0.1、出席倍率との掛け合わせなし
+                if (done.includes(name)) return { name, weight: 0.1 };
                 let w = getAttendanceWeight(name);
-                if (done.includes(name)) w *= 0.1;
                 if (pastSessions[0]?.includes(name)) w *= 0.1;
                 else if (pastSessions[1]?.includes(name)) w *= 0.4;
                 return { name, weight: w };
