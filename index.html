@@ -123,9 +123,9 @@
             align-items: center; justify-content: center;
         }
         .arrow {
-            position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0; border-left: 12px solid transparent;
-            border-right: 12px solid transparent; border-top: 24px solid var(--accent-color);
+            position: absolute; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 14px solid transparent;
+            border-right: 14px solid transparent; border-top: 28px solid var(--accent-color);
             z-index: 10;
         }
         #resultDisplay {
@@ -422,7 +422,7 @@
         }
 
         sessionWinners.push(winner.name);
-        resultDisplay.textContent = `当選：${winner.name} さん！`;
+        resultDisplay.innerHTML = `当選：${winner.name} さん！<br><span style="font-size:0.85em;">おめでとうございます！！🎉</span>`;
         playFanfare(); updateUI(); drawWheel();
 
         const max = parseInt(winnerCountSelect.value);
@@ -600,6 +600,9 @@
             520
         );
         canvas.width = size; canvas.height = size;
+        // 矢印をcanvasの上端に合わせる
+        const arrow = document.querySelector('.arrow');
+        arrow.style.top = (canvas.offsetTop - 2) + 'px';
         drawWheel();
     }
     window.addEventListener('resize', resizeCanvas);
